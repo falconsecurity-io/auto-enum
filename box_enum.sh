@@ -41,8 +41,8 @@ fi
 if [ $# -lt 4 ]; then
     printf "${red}Usage: $0 <type> <name> <yes/no> <ip1>${nc}\n"
     printf "${red}Explanation: $0 <HTB Platform Type> <Box Name> <Auto Terminal (Xdotool)> <IP>${nc}\n"
-    printf "${red}Example: box main lame yes 10.129.0.1${nc}\n"
-    printf "${red}Example: box academy section 10.129.0.1${nc}\n"
+    printf "${red}Example: enum main lame yes 10.129.0.1${nc}\n"
+    printf "${red}Example: enum academy section no 10.129.0.1${nc}\n"
     exit 1
 fi
 
