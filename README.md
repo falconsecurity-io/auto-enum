@@ -29,7 +29,10 @@ The scripts in this repository are intended to:
 
 #### **Clone the repository**
    ```bash
+   mkdir ~/Scripts
+   cd ~/Scripts
    git clone https://github.com/falconsecurity-io/auto-enum.git
+   chmod +x *.sh
    ```
 #### **Set up aliases**
 ##### Copy content from aliases.txt to your .zshrc file, modify as necessary, then:
