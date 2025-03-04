@@ -95,22 +95,26 @@ function print_time() {
 }
 
 function determine_os() {
-    if [[ "$boundary" =~ sa[0,1-9] ]]; then
-        local ttl=$1
-        if ! [[ "$ttl" =~ ^[0-9]+$ ]] || [ "$ttl" -lt 1 ] || [ "$ttl" -gt 255 ]; then
-            echo "Error: Invalid TTL value"
-            return 1
-        fi
-        if [ "$ttl" -le 64 ]; then
-            echo "Linux"
-        elif [ "$ttl" -le 128 ]; then
-            echo "Windows"
-        else
-            echo "Unknown OS"
-        fi
-    else
-        local ttl=$1
+    if [ -z "$ip" ]; then
+        echo "Error: ip variable is not set"
+        return 1
+    fi
+    local ttl
+    ttl=$(ping -c 1 "$ip" 2>/dev/null | grep -oP 'ttl=\K\d+')
+    if [ -z "$ttl" ]; then
+        echo "Error: Could not extract TTL from ping output"
+        return 1
+    fi
+    if ! [[ "$ttl" =~ ^[0-9]+$ ]] || [ "$ttl" -lt 1 ] || [ "$ttl" -gt 255 ]; then
+        echo "Error: Invalid TTL value"
+        return 1
+    fi
+    if [ "$ttl" -le 64 ]; then
+        echo "Linux"
+    elif [ "$ttl" -le 128 ]; then
         echo "Windows"
+    else
+        echo "Unknown OS"
     fi
 }
 
