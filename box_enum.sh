@@ -56,6 +56,7 @@ shift 3
 arg_ip_list=""
 ip_regex='^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$'
 for ip in "$@"; do
+    echo "Processing IP: '$ip'"
     if [[ $ip =~ $ip_regex ]]; then
         if [[ -n "$arg_ip_list" ]]; then
             arg_ip_list+=$'\n'
@@ -110,11 +111,11 @@ function determine_os() {
         return 1
     fi
     if [ "$ttl" -le 64 ]; then
-        echo "Linux"
+        os="Linux"
     elif [ "$ttl" -le 128 ]; then
-        echo "Windows"
+        os="Windows"
     else
-        echo "Unknown OS"
+        os="Unknown OS"
     fi
 }
 
@@ -299,6 +300,9 @@ domain=""
 fqdn=""
 ad=""
 
+# Determine OS
+determine_os
+
 # Print box characteristics
 print_header "BOX CHARACTERISTICS" "${bold_white}" "true"
 printf "$pre_info Box Name: ${magenta}${name^}${nc}\n"
@@ -310,7 +314,7 @@ printf "$pre_info Auto Terminal Tab Creation: ${magenta}${autoterm^}${nc}\n"
 print_header "INITIAL TCP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
-scan_tcp_init="sudo nmap -Pn -n -v -T4 -p- --open $ip -oN $dir_nmap/nmap_open_tcp_$ip_last"
+scan_tcp_init="sudo nmap -Pn -n -v -T4 -p- --open $ip -oN $dir_nmap/nmap_open_tcp"
 printf "$pre_info Type: ${bold_magenta}All TCP Ports${nc}\n"
 printf "$pre_cmd Command: ${yellow}$scan_tcp_init${nc}\n"
 eval $scan_tcp_init
@@ -319,22 +323,22 @@ print_time "end"
 print_header "INITIAL UDP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
-scan_udp_init="sudo nmap -Pn -v -sU --min-rate=100 --max-retries=2 --open $ip -oN $dir_nmap/nmap_open_udp_$ip_last"
+scan_udp_init="sudo nmap -Pn -v -sU --min-rate=100 --max-retries=2 --open $ip -oN $dir_nmap/nmap_open_udp"
 printf "$pre_info Type: ${bold_magenta}Top 1000 UDP Ports${nc}\n"
 printf "$pre_cmd Command: ${yellow}$scan_udp_init${nc}\n"
 eval $scan_udp_init
 print_time "end"
 
 # Extract open ports from initial scans
-open_tcp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_tcp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
-open_udp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_udp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_tcp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_tcp_$ | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_udp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_udp_$ | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
 
 # Run comprehensive scans
 print_header "COMPREHENSIVE TCP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
 printf "$pre_info Type: ${bold_magenta}Open TCP Ports${nc}\n"
-scan_tcp_comp="sudo nmap -Pn -v -sCV -T4 -p $open_tcp $ip -oN $dir_nmap/nmap_scan_tcp_$ip_last"
+scan_tcp_comp="sudo nmap -Pn -v -sCV -T4 -p $open_tcp $ip -oN $dir_nmap/nmap_scan_tcp_$"
 printf "$pre_cmd Command: ${yellow}$scan_tcp_comp${nc}\n"
 if [ ! -z "$open_tcp" ]; then
     eval $scan_tcp_comp
@@ -342,8 +346,8 @@ if [ ! -z "$open_tcp" ]; then
     print_time "end"
 else
     printf "$pre_fail No ${bold_magenta}open TCP ${bold_blue}ports found. Skipping comprehensive TCP scan and moving to next step.${nc}\n"
-    if [ ! -s "$dir_nmap/nmap_scan_tcp_$ip_last" ]; then
-        sudo touch $dir_nmap/nmap_scan_tcp_$ip_last
+    if [ ! -s "$dir_nmap/nmap_scan_tcp" ]; then
+        sudo touch $dir_nmap/nmap_scan_tcp
     fi
     print_time "end"
 fi
@@ -352,7 +356,7 @@ print_header "COMPREHENSIVE UDP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
 printf "$pre_info Type: ${bold_magenta}Open UDP Ports${nc}\n"
-scan_udp_comp="sudo nmap -Pn -v -sU -sCV --min-rate=100 --max-retries=2 -p $open_udp $ip -oN $dir_nmap/nmap_scan_udp_$ip_last"
+scan_udp_comp="sudo nmap -Pn -v -sU -sCV --min-rate=100 --max-retries=2 -p $open_udp $ip -oN $dir_nmap/nmap_scan_udp"
 printf "$pre_cmd Command: ${yellow}$scan_udp_comp${nc}\n"
 if [ ! -z "$open_udp" ]; then
     eval $scan_udp_comp
@@ -360,19 +364,19 @@ if [ ! -z "$open_udp" ]; then
     print_time "end"
 else
     printf "$pre_fail No ${bold_magenta}open UDP ${bold_blue}ports found. Skipping comprehensive TCP scan and moving to next step.${nc}\n"
-    if [ ! -s "$dir_nmap/nmap_scan_udp_$ip_last" ]; then
-        sudo touch $dir_nmap/nmap_scan_udp_$ip_last
+    if [ ! -s "$dir_nmap/nmap_scan_udp" ]; then
+        sudo touch $dir_nmap/nmap_scan_udp
     fi
     print_time "end"
 fi
 
 # Extract ports from comprehensive scans and print open ports
 print_header "PORTS DETECTED" "${bold_white}" "true"
-open_dns=$((grep -q '53/tcp\s*open' $dir_nmap/nmap_open_tcp_$ip_last && echo "53/tcp"; grep -q '53/udp\s*open' $dir_nmap/nmap_open_udp_$ip_last && echo "53/udp") | tr '\n' ',' | sed 's/,$//')
-open_smb=$(grep -E '^(139/tcp|445/tcp)\s+open' $dir_nmap/nmap_open_tcp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
-open_ldap=$(grep -E '^(389/tcp|636/tcp)\s+open' $dir_nmap/nmap_open_tcp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
-open_krb=$(grep -E '^(88/tcp|464/tcp)\s+open' $dir_nmap/nmap_open_tcp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
-open_http=$(grep -E '^(443/tcp|80/tcp|8080/tcp|8000/tcp|8443/tcp|8888/tcp|8081/tcp|81/tcp|8008/tcp|82/tcp)\s+open' $dir_nmap/nmap_open_tcp_$ip_last | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_dns=$((grep -q '53/tcp\s*open' $dir_nmap/nmap_open_tcp && echo "53/tcp"; grep -q '53/udp\s*open' $dir_nmap/nmap_open_udp && echo "53/udp") | tr '\n' ',' | sed 's/,$//')
+open_smb=$(grep -E '^(139/tcp|445/tcp)\s+open' $dir_nmap/nmap_open_tcp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_ldap=$(grep -E '^(389/tcp|636/tcp)\s+open' $dir_nmap/nmap_open_tcp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_krb=$(grep -E '^(88/tcp|464/tcp)\s+open' $dir_nmap/nmap_open_tcp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_http=$(grep -E '^(443/tcp|80/tcp|8080/tcp|8000/tcp|8443/tcp|8888/tcp|8081/tcp|81/tcp|8008/tcp|82/tcp)\s+open' $dir_nmap/nmap_open_tcp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
 if [ -n "$open_tcp" ]; then
     printf "$pre_info Open TCP ports: ${magenta}$open_tcp${bold_blue}${nc}\n"
 else
@@ -418,11 +422,11 @@ printf "$pre_info Tool: ${bold_cyan}NetExec (NXC)${nc}\n"
 printf "$pre_info Type: ${bold_magenta}SMB Mode Domain Info Enum${nc}\n"
 printf "$pre_cmd Command: ${yellow}nxc smb $ip -u '' -p ''${nc}\n"
 if [ ! -z "$open_smb" ]; then
-    nxc smb $ip -u '' -p '' | tee -a $dir_init/nxc_domain_$ip_last
+    nxc smb $ip -u '' -p '' | tee -a $dir_init/nxc_domain
     printf "$pre_win Command ran successfully.${nc}\n"
 else
     printf "$pre_fail Server does ${bold_red}not${bold_blue} have an ${bold_magenta}open SMB ${bold_blue}port. Skipping domain enumeration.${nc}\n"
-    sudo touch $dir_init/nxc_domain_$ip_last
+    sudo touch $dir_init/nxc_domain
 fi
 
 # Set domain variables
@@ -431,25 +435,25 @@ domain_default="$name.htb"
 
 # Set nmap greps based on scan type
 ######## This likely needs work
-domain_multi_nmap=$(grep -oPi '\b[a-z0-9-]+\.[a-z]{2,}\b' "$dir_nmap/nmap_scan_tcp_$ip_last" | sort -u | awk '{print tolower($0)}')
-domain_nmap=$(grep -oPi '\b[a-z0-9-]+\.[a-z]{2,}\b' "$dir_nmap/nmap_scan_tcp_$ip_last" | sort -u | head -n 1 | awk '{print tolower($0)}')
-fqdn_nmap=$(grep -oPi '\b((?:(?:[a-z0-9-]+\.)+[a-z]{2,}))\b' "$dir_nmap/nmap_scan_tcp_$ip_last" | sort -u | head -n 1 | awk '{print tolower($0)}')
+domain_multi_nmap=$(grep -oPi '\b[a-z0-9-]+\.[a-z]{2,}\b' "$dir_nmap/nmap_scan_tcp" | sort -u | awk '{print tolower($0)}')
+domain_nmap=$(grep -oPi '\b[a-z0-9-]+\.[a-z]{2,}\b' "$dir_nmap/nmap_scan_tcp" | sort -u | head -n 1 | awk '{print tolower($0)}')
+fqdn_nmap=$(grep -oPi '\b((?:(?:[a-z0-9-]+\.)+[a-z]{2,}))\b' "$dir_nmap/nmap_scan_tcp" | sort -u | head -n 1 | awk '{print tolower($0)}')
 
 # Set nxc greps
-name_nxc=$(grep -oPi '(?<=name:)[^)]+' "$dir_init/nxc_domain_$ip_last" | sort -u | head -n 1 | awk '{print tolower($0)}')
-domain_nxc=$(grep -oPi '(?<=domain:)[^)]+'  "$dir_init/nxc_domain_$ip_last" | sort -u | head -n 1 | awk '{print tolower($0)}')
+name_nxc=$(grep -oPi '(?<=name:)[^)]+' "$dir_init/nxc_domain" | sort -u | head -n 1 | awk '{print tolower($0)}')
+domain_nxc=$(grep -oPi '(?<=domain:)[^)]+'  "$dir_init/nxc_domain" | sort -u | head -n 1 | awk '{print tolower($0)}')
 dn_domainname=$(echo ${domain_nxc%%.*} | awk '{print toupper($0)}')
 dn_tld=$(echo ${domain_nxc#*.}| awk '{print toupper($0)}')
 if [ ! -z "$name_nxc" ] || [ ! -z "$domain_nxc" ]; then
     fqdn_nxc="$name_nxc.$domain_nxc"
-    echo -e "$domain_multi_nmap\n$domain_nxc" | sort -u | sed '/^$/d' > "$dir_init/domain_extraction_$ip_last"
-    echo -e "$fqdn_nmap\n$fqdn_nxc" | sort -u | sed '/^$/d' > "$dir_init/fqdn_extraction_$ip_last"
+    echo -e "$domain_multi_nmap\n$domain_nxc" | sort -u | sed '/^$/d' > "$dir_init/domain_extraction"
+    echo -e "$fqdn_nmap\n$fqdn_nxc" | sort -u | sed '/^$/d' > "$dir_init/fqdn_extraction"
 else
-    echo -e "$domain_multi_nmap\n$domain_nxc" | sort -u | sed '/^$/d' > "$dir_init/domain_extraction_$ip_last"
-    echo -e "$fqdn_nmap" | sort -u | sed '/^$/d' > "$dir_init/fqdn_extraction_$ip_last"
+    echo -e "$domain_multi_nmap\n$domain_nxc" | sort -u | sed '/^$/d' > "$dir_init/domain_extraction"
+    echo -e "$fqdn_nmap" | sort -u | sed '/^$/d' > "$dir_init/fqdn_extraction"
 fi
-domain_extraction="$dir_init/domain_extraction_$ip_last"
-fqdn_extraction="$dir_init/fqdn_extraction_$ip_last"
+domain_extraction="$dir_init/domain_extraction"
+fqdn_extraction="$dir_init/fqdn_extraction"
 # Set blank final domain variables for further processing
 domain=""
 fqdn=""
@@ -465,8 +469,8 @@ if [ -s "$domain_extraction" ] || [ -s "$fqdn_extraction" ]; then
         printf "$pre_info Tool: ${bold_cyan}nslookup${nc}\n"
         printf "$pre_info Type: ${bold_magenta}DNS Query LDAP Domain Controller${nc}\n"
         printf "$pre_cmd Command: ${yellow}nslookup -type=SRV _ldap._tcp.dc._msdcs.$domain $ip${nc}\n"
-        nslookup -type=SRV _ldap._tcp.dc._msdcs.$domain $ip > $dir_init/output_nslookup_$ip_last
-        dc=$(grep -oP 'service = \d+ \d+ \d+ \K[^ ]+' $dir_init/output_nslookup_$ip_last | sed 's/\.$//' | awk '{print tolower($0)}')
+        nslookup -type=SRV _ldap._tcp.dc._msdcs.$domain $ip > $dir_init/output_nslookup
+        dc=$(grep -oP 'service = \d+ \d+ \d+ \K[^ ]+' $dir_init/output_nslookup | sed 's/\.$//' | awk '{print tolower($0)}')
         if [ ! -z "$dc" ]; then
             if [ "$dc" = "$fqdn" ]; then
                 printf "$pre_win This machine is likely an Active Directory Domain Controller. FQDN: ${magenta}$dc${nc}\n"
@@ -578,8 +582,8 @@ for port in "${ports_tcp[@]}"; do
         printf "${yellow}nmap --script krb5-* -p $port $ip${nc}\n"
         print_header "Kerbrute" "${bold_yellow}" "true"
         printf "${yellow}kerbrute userenum -d $domain --dc $ip ${magenta}enum/usernames${yellow}${nc}\n"
-        printf "${yellow}sudo kerbrute userenum -d $domain --dc $ip $dir_init/usernames_$ip_last --hash-file $dir_init/kerbrute_asrep_$ip_last -t 20${nc}\n"
-        printf "${yellow}sudo kerbrute userenum -d $domain --dc $ip $dir_init/usernames_$ip_last --downgrade --hash-file $dir_init/kerbrute_asrep_$ip_last -t 20${nc}\n"
+        printf "${yellow}sudo kerbrute userenum -d $domain --dc $ip $dir_init/usernames --hash-file $dir_init/kerbrute_asrep -t 20${nc}\n"
+        printf "${yellow}sudo kerbrute userenum -d $domain --dc $ip $dir_init/usernames --downgrade --hash-file $dir_init/kerbrute_asrep -t 20${nc}\n"
         print_header "Username Extraction" "${bold_yellow}" "true"
         printf "awk -F'\t' '/VALID USERNAME:/ {split(\$2, a, "@"); print a[1]}' kerbrute_output | sort -u > valid_users${nc}\n"
         printf "awk -F'\t' '/VALID USERNAME:/ {print \$2}' kerbrute_output | sort -u > valid_emails${nc}\n"
@@ -921,18 +925,18 @@ print_header "SUBDOMAIN ENUMERATION" "${bold_white}" "true"
 if [ ! -z "$dns_all" ]; then
     printf "$pre_info To run a comprehensive Nmap scan against the subdomains discovered from the Dig enumeration:${nc}\n"
     printf "$pre_info Note: You must add DNS subdomains to /etc/hosts first per instructions above${nc}\n"
-    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains_$ip_last -oA $dir_nmap/http_$ip_last${nc}\n"
+    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains -oA $dir_nmap/http${nc}\n"
     printf "${yellow}eyewitness --web -x $dir_nmap/http.xml -d $dir_eye${nc}\n"
     printf "$pre_info To run a comprehensive Nmap scan against manually discovered subdomains:${nc}\n"
     printf "$pre_info Note: You must add any discovered subdomains to /etc/hosts first using the following command:${nc}\n"
-    printf "${yellow}subdomains $dir_init/subdomains_$ip_last $domain $ip${nc}\n"
-    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains_$ip_last -oA $dir_nmap/http${nc}\n"
+    printf "${yellow}subdomains $dir_init/subdomains $domain $ip${nc}\n"
+    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains -oA $dir_nmap/http${nc}\n"
     printf "${yellow}eyewitness --web -x $dir_nmap/http.xml -d $dir_eye${nc}\n"
 else
     printf "$pre_info To run a comprehensive Nmap scan against manually discovered subdomains:${nc}\n"
     printf "$pre_info Note: You must add any discovered subdomains to /etc/hosts first using the following command:${nc}\n"
-    printf "${yellow}subdomains $dir_init/subdomains_$ip_last $domain $ip${nc}\n"
-    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains_$ip_last -oA $dir_nmap/http${nc}\n"
+    printf "${yellow}subdomains $dir_init/subdomains $domain $ip${nc}\n"
+    printf "${yellow}sudo nmap -Pn -p $open_http -iL $dir_init/subdomains -oA $dir_nmap/http${nc}\n"
     printf "${yellow}eyewitness --web -x $dir_nmap/http.xml -d $dir_eye${nc}\n"
 fi
 
