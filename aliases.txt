@@ -1,0 +1,20 @@
+# custom aliases
+## quality of life
+alias l='ls -CF'
+alias ll='ls -la'
+alias sudo='sudo '
+alias md='mkdir -p'
+alias ..='cd ../'
+alias cls='clear'
+alias claer='clear'
+alias myip='awk "/^[0-9]+:/{iface=\$2} /inet /{print iface, \$2}" <(ip -c a)'
+alias http='sudo python3 -m http.server'
+## repo specific
+alias enum='~/Scripts/box_enum.sh'
+alias oscp='~/Scripts/box_setup.sh'
+alias ntlmpw='~/Scripts/ntlmpw.sh'
+## additional
+alias rustscan='docker run -it --rm --name rustscan rustscan/rustscan:2.1.1'
+alias listen='sudo rlwrap -cAr -D 2 -pred nc -nvlp '
+alias slisten='socat file:`tty`,raw,echo=0 TCP-L:'
+alias ligolo='/home/kali/Transfer/tools/linux/ligolo/proxy'
