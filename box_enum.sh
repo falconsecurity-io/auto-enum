@@ -56,7 +56,6 @@ shift 3
 arg_ip_list=""
 ip_regex='^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$'
 for ip in "$@"; do
-    echo "Processing IP: '$ip'"
     if [[ $ip =~ $ip_regex ]]; then
         if [[ -n "$arg_ip_list" ]]; then
             arg_ip_list+=$'\n'
