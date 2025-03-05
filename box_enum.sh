@@ -187,8 +187,8 @@ dir_name="$dir_type/$name"
 dir_exp="$dir_name/exploits"
 dir_tool="$dir_name/tools"
 dir_loot="$dir_name/loot"
-dir_enum="$dir_name/enum"
 dir_hist="$dir_name/history"
+dir_enum="$dir_name/enum"
 dir_init="$dir_enum/init"
 dir_nmap="$dir_enum/nmap"
 dir_burp="$dir_enum/burp"
@@ -213,11 +213,11 @@ fi
 if [ ! -d "$dir_loot" ]; then
     mkdir -p $dir_loot
 fi
-if [ ! -d "$dir_enum" ]; then
-    mkdir -p $dir_enum
-fi
 if [ ! -d "$dir_hist" ]; then
     mkdir -p $dir_hist
+fi
+if [ ! -d "$dir_enum" ]; then
+    mkdir -p $dir_enum
 fi
 if [ ! -d "$dir_init" ]; then
     mkdir -p $dir_init
@@ -421,8 +421,8 @@ printf "$pre_info Tool: ${bold_cyan}NetExec (NXC)${nc}\n"
 printf "$pre_info Type: ${bold_magenta}SMB Mode Domain Info Enum${nc}\n"
 printf "$pre_cmd Command: ${yellow}nxc smb $ip -u '' -p ''${nc}\n"
 if [ ! -z "$open_smb" ]; then
-    touch $dir_init/nxc_domain
-    nxc smb $ip -u '' -p '' | tee -a $dir_init/nxc_domain
+    sudo touch $dir_init/nxc_domain
+    nxc smb $ip -u '' -p '' | sudo tee -a $dir_init/nxc_domain
     printf "$pre_win Command ran successfully.${nc}\n"
 else
     printf "$pre_fail Server does ${bold_red}not${bold_blue} have an ${bold_magenta}open SMB ${bold_blue}port. Skipping domain enumeration.${nc}\n"
