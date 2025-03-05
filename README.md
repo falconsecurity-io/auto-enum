@@ -32,12 +32,12 @@ The scripts in this repository are intended to:
    mkdir ~/Scripts
    cd ~/Scripts
    git clone https://github.com/falconsecurity-io/auto-enum.git
-   chmod +x *.sh
+   chmod +x ~/Scripts/auto-enum/*.sh
    ```
 #### **Set up aliases**
-##### Copy content from aliases.txt to your .zshrc file, modify as necessary, then:
    ```bash
-   source ~/.zshrc
+   cat ~/Scripts/auto-enum/aliases.txt >> ~/.bash_aliases
+   source ~/.bashrc
    ```
 ### Usage
 #### To set up terminals and desktop for hacking
