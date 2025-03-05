@@ -20,7 +20,6 @@ blue='\033[0;34m'
 magenta='\033[0;35m'
 cyan='\033[0;36m'
 gray='\033[0;37m'
-dark_gray='\033[1;30m'
 bold_red='\033[1;31m'
 bold_green='\033[1;32m'
 bold_yellow='\033[1;33m'
@@ -252,12 +251,12 @@ if [ ! -d "$dir_auto" ]; then
 fi
 
 # Define color prefixes
-pre_info="${dark_gray}[${bold_white}/${dark_gray}]${bold_blue}"
-pre_cmd="${dark_gray}[${bold_cyan}\$${dark_gray}]${bold_blue}"
-pre_out="${dark_gray}[${bold_magenta}=${dark_gray}]${bold_blue}"
-pre_fail="${dark_gray}[${bold_red}-${dark_gray}]${bold_blue}"
-pre_win="${dark_gray}[${bold_green}+${dark_gray}]${bold_blue}"
-pre_warn="${dark_gray}[${bold_yellow}!${dark_gray}]${bold_blue}"
+pre_info="${bold_white}[${bold_white}/${bold_white}]${bold_blue}"
+pre_cmd="${bold_white}[${bold_cyan}\$${bold_white}]${bold_blue}"
+pre_out="${bold_white}[${bold_magenta}=${bold_white}]${bold_blue}"
+pre_fail="${bold_white}[${bold_red}-${bold_white}]${bold_blue}"
+pre_win="${bold_white}[${bold_green}+${bold_white}]${bold_blue}"
+pre_warn="${bold_white}[${bold_yellow}!${bold_white}]${bold_blue}"
 
 # Write script output to file
 exec > >(tee $dir_name/box-$name-output.txt) 2>&1
