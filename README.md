@@ -39,6 +39,11 @@ The scripts in this repository are intended to:
    cat ~/Scripts/auto-enum/aliases.txt >> ~/.bash_aliases
    source ~/.bashrc
    ```
+#### **Install dependencies**
+```bash
+sudo apt-get install xdotool -y
+sudo apt-get install tree -y
+```
 ### Usage
 #### To set up terminals and desktop for hacking
    ```bash
