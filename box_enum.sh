@@ -223,8 +223,8 @@ fi
 if [ ! -d "$dir_init" ]; then
     mkdir -p $dir_init
 fi
-if [ ! -d "" ]; then
-    mkdir -p 
+if [ ! -d "$dir_nmap" ]; then
+    mkdir -p $dir_nmap
 fi
 if [ ! -d "$dir_burp" ]; then
     mkdir -p $dir_burp
