@@ -223,8 +223,8 @@ fi
 if [ ! -d "$dir_init" ]; then
     mkdir -p $dir_init
 fi
-if [ ! -d "$dir_nmap" ]; then
-    mkdir -p $dir_nmap
+if [ ! -d "" ]; then
+    mkdir -p 
 fi
 if [ ! -d "$dir_burp" ]; then
     mkdir -p $dir_burp
@@ -313,7 +313,7 @@ printf "$pre_info Auto Terminal Tab Creation: ${magenta}${autoterm^}${nc}\n"
 print_header "INITIAL TCP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
-scan_tcp_init="sudo nmap -Pn -n -v -T4 -p- --open $ip -oN $dir_nmap/nmap_open_tcp"
+scan_tcp_init="sudo nmap -Pn -n -v -T4 -p- --open $ip -oN /nmap_open_tcp"
 printf "$pre_info Type: ${bold_magenta}All TCP Ports${nc}\n"
 printf "$pre_cmd Command: ${yellow}$scan_tcp_init${nc}\n"
 eval $scan_tcp_init
@@ -322,22 +322,22 @@ print_time "end"
 print_header "INITIAL UDP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
-scan_udp_init="sudo nmap -Pn -v -sU --min-rate=100 --max-retries=2 --open $ip -oN $dir_nmap/nmap_open_udp"
+scan_udp_init="sudo nmap -Pn -v -sU --min-rate=100 --max-retries=2 --open $ip -oN /nmap_open_udp"
 printf "$pre_info Type: ${bold_magenta}Top 1000 UDP Ports${nc}\n"
 printf "$pre_cmd Command: ${yellow}$scan_udp_init${nc}\n"
 eval $scan_udp_init
 print_time "end"
 
 # Extract open ports from initial scans
-open_tcp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_tcp_$ | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
-open_udp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_udp_$ | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_tcp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_tcp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
+open_udp=$(grep -oP '\d+/(tcp|udp)\s*open' $dir_nmap/nmap_open_udp | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//')
 
 # Run comprehensive scans
 print_header "COMPREHENSIVE TCP SCAN" "${bold_white}" "true"
 print_time "start"
 printf "$pre_info Tool: ${bold_cyan}Nmap${nc}\n"
 printf "$pre_info Type: ${bold_magenta}Open TCP Ports${nc}\n"
-scan_tcp_comp="sudo nmap -Pn -v -sCV -T4 -p $open_tcp $ip -oN $dir_nmap/nmap_scan_tcp_$"
+scan_tcp_comp="sudo nmap -Pn -v -sCV -T4 -p $open_tcp $ip -oN $dir_nmap/nmap_scan_tcp"
 printf "$pre_cmd Command: ${yellow}$scan_tcp_comp${nc}\n"
 if [ ! -z "$open_tcp" ]; then
     eval $scan_tcp_comp
