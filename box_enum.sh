@@ -259,6 +259,7 @@ pre_win="${bold_white}[${bold_green}+${bold_white}]${bold_blue}"
 pre_warn="${bold_white}[${bold_yellow}!${bold_white}]${bold_blue}"
 
 # Write script output to file
+touch $dir_name/box-$name-output.txt
 exec > >(tee $dir_name/box-$name-output.txt) 2>&1
 
 # Print symbology
@@ -420,6 +421,7 @@ printf "$pre_info Tool: ${bold_cyan}NetExec (NXC)${nc}\n"
 printf "$pre_info Type: ${bold_magenta}SMB Mode Domain Info Enum${nc}\n"
 printf "$pre_cmd Command: ${yellow}nxc smb $ip -u '' -p ''${nc}\n"
 if [ ! -z "$open_smb" ]; then
+    touch $dir_init/nxc_domain
     nxc smb $ip -u '' -p '' | tee -a $dir_init/nxc_domain
     printf "$pre_win Command ran successfully.${nc}\n"
 else
