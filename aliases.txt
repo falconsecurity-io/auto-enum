@@ -11,7 +11,8 @@ alias myip='awk "/^[0-9]+:/{iface=\$2} /inet /{print iface, \$2}" <(ip -c a)'
 alias http='sudo python3 -m http.server'
 ## repo specific
 alias enum='~/Scripts/auto-enum/box_enum.sh'
-alias oscp='~/Scripts/auto-enum/box_setup.sh'
+alias setup='~/Scripts/auto-enum/box_setup.sh'
+alias subs='~/Scripts/auto-enum/box_subdomains.sh'
 alias ntlmpw='~/Scripts/auto-enum/ntlmpw.sh'
 ## additional
 alias rustscan='docker run -it --rm --name rustscan rustscan/rustscan:2.1.1'
