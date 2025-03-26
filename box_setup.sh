@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Script Title: HTB VPN and Terminal Setup Helper
-# Date: 03/03/2025
+# Date: 03/26/2025
 # Author: Robboman (Falcon Security)
 # GitHub: https://github.com/falconsecurity-io
-# Version: 1.0
+# Version: 1.01
 # Description: This script is intended to automation the initial setup and VPN connection of a Kali machine to use against HTB's platform. Use of alias recommended for easier script init.
 # Requirments: Xdotool (https://github.com/jordansissel/xdotool)
 
@@ -37,7 +37,7 @@ platform=$1
 type=$2
 
 # Start VPN
-sudo openvpn /mnt/hgfs/share/openvpn/$platform/$type.ovpn
+sudo openvpn /mnt/files/openvpn/$platform/$type.ovpn
 
 # Terminal commands
 sleep 30 #add time to enter username and password
